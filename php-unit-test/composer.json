@@ -1,0 +1,17 @@
+{
+    "name": "epourgh/records",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Emerson Pourghaed",
+            "email": "epourgh@gmail.com"
+        }
+    ],
+    "require": {
+        "phpunit/phpunit": "^9"
+    }
+}
