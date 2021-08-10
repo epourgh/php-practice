@@ -2,8 +2,7 @@
 
 session_start();
 
-class Route
-{
+class Route {
 
     static function getId($route_arr, $path_arr)
     {
@@ -22,22 +21,62 @@ class Route
         return $id;
     }
 
+    static function getParams($query_arr) {
+        
+        $params = [];
+
+        foreach ($query_arr as $query) {
+            $keyValuePair = explode('=', $query);
+            $params[$keyValuePair[0]] = $keyValuePair[1];
+        }
+
+        return $params;
+    }
+
     static function parseUrl($route)
     {
 
         $request_url = filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL);
-        $path = parse_url($request_url, PHP_URL_PATH);
-        $query = parse_url($request_url, PHP_URL_QUERY);
-        $fragment = parse_url($request_url, PHP_URL_FRAGMENT);
+        
+        $request_path = parse_url($request_url, PHP_URL_PATH);
+        $request_query = parse_url($request_url, PHP_URL_QUERY);
+        // $request_fragment = parse_url($request_url, PHP_URL_FRAGMENT);
+        $request_path_arr = explode('/', $request_path);
+        $request_query_arr = explode('&', $request_query);
 
-        $route_arr = explode('/', $route);
-        $path_arr = explode('/', $path);
-        array_shift($route_arr);
-        array_shift($path_arr);
+        $route_path = parse_url($route, PHP_URL_PATH);
+        $route_query = parse_url($route, PHP_URL_QUERY);
+        $route_path_arr = explode('/', $route_path);
+        $route_query_arr = explode('&', $route_query);
 
-        $id = Route::getId($route_arr, $path_arr);
+        array_shift($request_path_arr);
+        array_shift($route_path_arr);
 
+        if ($request_path == '/' && $route_path == '/') {
+            // mysql('/')
+            exit();
+        }
+
+        if ((count($route_path_arr) != count($request_path_arr)) || (count($request_query_arr) != count($route_query_arr))) {
+            return;
+        }
+
+        $id = Route::getId($route_path_arr, $request_path_arr);
         echo $id;
+        
+        $params = Route::getParams($request_query_arr);
+        foreach ($params as $key => $value) {
+            echo $key . '****' . $value;
+        }
+        
+        if ($request_path_arr[0] == $route_path_arr[0]) {
+
+            $table = $request_path_arr[0];
+            // mysql($table, $id, $params)
+            echo $table;
+        }
+
+        
     }
 
     static function get($route)
